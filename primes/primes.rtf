@@ -67,7 +67,7 @@ z.freeAll;\
 					s = \cf4 Synth\cf3 (\cf5 "just-sine"\cf3 );\
 					p=p.nextPowerOfTwo;\
 				\
-					freq =((p *(2**((i.log2.ceil %4)+i.log10.floor) )*(([(\{\cf4 |j|\cf3 j=(2*j)+1+(i.log2.ceil%2); (j/j.nextPowerOfTwo)\}!( hf)),1]).flat *.x n.permute(i) * [1,9/8].wrapAt(ill.sort.wrapAt(i.log.floor-1)) /16).flat.permute(ii).wrapAt(l+j+k+p  ) * (2**i.factors.size)) * (1/2**l));\
+					freq =((p *(2**((i.log2.ceil %4)+i.log10.floor) )*(([(\{\cf4 |j|\cf3 j=(2*j)+1+(i.log2.ceil%2); (j/j.nextPowerOfTwo)\}!( hf)),1]).flat *.x n.permute(i) * [1,9/8].wrapAt(ill.sort.wrapAt(i.log.floor-1)) /16).flat.permute(ii).wrapAt(l+j+k+p -2 ) * (2**i.factors.size)) * (1/2**l));\
 					\
 					(freq > (2**14)).if (\{freq = freq * (1/(2**8))\});\
 					(freq > (2**14)).if (\{freq = freq * (1/(2**8))\});\
@@ -75,12 +75,17 @@ z.freeAll;\
 					(freq > (2**14)).if (\{freq.postln; freq = freq * (1/(2**7))\});\
 \
 					(freq < (2**7)).if (\{freq = freq * 2\});\
-					(freq > 192).if(\{freq = freq + (\{\cf4 |i|\cf3 i * (2.5/8)\}!i.log2.ceil.asInt).wrapAt(k+j+i+l)\});\
+					(freq > 192).if(\{freq = freq + (\{\cf4 |i|\cf3 i * (2.5/8)\}!i.log.ceil.asInt).wrapAt(k+j+p+l -2)\});\
 \
 					s.set(\cf6 \\freq\cf3 , freq);\
+					\
+					\cf2 //s.set(\\rel,((24+l)/p.log.ceil)/i.log10);\cf3 \
+\
 					s.set(\cf6 \\rel\cf3 ,((24+l)/p.log.ceil)/i.log10);\
 					s.set(\cf6 \\pan\cf3 ,(1/(i.factors[j])) * (-1**(i+j+k+l)));\
 					s.set(\cf6 \\atk\cf3 ,(1/freq**0.5) * (i.factors[j]/i.log10) * (1/(i.log*2)));\
+						\cf2 //s.set(\\atk,(1/freq**0.5) * (i.factors[j].log2) * (1/(i.log*2)));\cf3 \
+\
 					s.set(\cf6 \\sus\cf3 ,-1 * i.factors[j].log);\
 					s.set(\cf6 \\gate\cf3 ,1);\
 					s.set(\cf6 \\amp\cf3 ,(((1/((p-(0.3)).log10)) * 0.005 / ((k/p.log10.ceil)+1))*i.factors[j].sqrt)/(l+1));\
