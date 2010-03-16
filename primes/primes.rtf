@@ -49,18 +49,22 @@ z.freeAll;\
 	];\
 \
 ~play = \{\cf3 |i|\cf0 \
-		\cf3 var\cf0  il,ill,r,w,hf,ii;\
+		\cf3 var\cf0  il,ill,r,w,hf,ii,n,logTen;\
 		ii=i;\
 		il = (\{\cf3 |x|\cf0 ((2**x)*(i/(2**x)%2).floor)\}!i.log2.ceil.asInt);\
 		ill = (1+il).log2.floor;\
 		ill.postln;\
 		il.postln;\
 		i.postln;\
-		hf = ill.reverse.wrapAt(i.log10.ceil);\
-		hf.postln;\
-		w = ~w.wrapAt(ill.reverse.wrapAt(i.log10-3));\
-		(\{|i|i\}!~w.size).wrapAt(ill.reverse.wrapAt(i.log10-3)).postln;\
 		i=(il.sort.reverse[0] + il.sort.reverse.wrapAt(i.log10-1) +(i%il.sort.reverse.wrapAt(i.log10+1))+ (i%il.sort.reverse.wrapAt(i.log10-2))).ceil.asInt;\
+		logTen = i.log10.ceil.asInt;\
+		(\{|i|i\}!~w.size).wrapAt(ill.reverse.wrapAt(logTen-3)).postln;\
+		hf = ill.reverse.wrapAt(logTen);\
+		hf.postln;\
+		w = ~w.wrapAt(ill.reverse.wrapAt(logTen - 3));\
+\
+		n = [[16,18,24,27,36,40],[16,20,24,30,36,45,54],[45*3/4,20,27,30,45,54]].permute(ill.reverse[0].asInt).wrapAt(ill.reverse.wrapAt(logTen));\
+\
 		i.postln;\
 		i.factors.postln;		\
 		r = \cf3 Routine\cf0  \{\
@@ -73,7 +77,7 @@ z.freeAll;\
 					s = \cf3 Synth\cf0 (\cf4 "just-sine"\cf0 );\
 					p=p.nextPowerOfTwo;\
 				\
-					freq =((p *(2**((i.log2.ceil %4)+i.log10.floor) )*(([(\{\cf3 |j|\cf0 j=(2*j)+1+(i.log2.ceil%2); (j/j.nextPowerOfTwo)\}!( hf)),1]).flat *.x[16,20,24,30,36,45,54].permute(i) * [1,9/8].wrapAt(ill.sort.wrapAt(i.log.floor-1)) /16).flat.permute(ii).wrapAt(l+j+k+p  ) * (2**i.factors.size)) * (1/2**l));\
+					freq =((p *(2**((i.log2.ceil %4)+i.log10.floor) )*(([(\{\cf3 |j|\cf0 j=(2*j)+1+(i.log2.ceil%2); (j/j.nextPowerOfTwo)\}!( hf)),1]).flat *.x n.permute(i) * [1,9/8].wrapAt(ill.sort.wrapAt(i.log.floor-1)) /16).flat.permute(ii).wrapAt(l+j+k+p  ) * (2**i.factors.size)) * (1/2**l));\
 					\
 					(freq > (2**14)).if (\{freq = freq * (1/(2**8))\});\
 					(freq > (2**14)).if (\{freq = freq * (1/(2**8))\});\
@@ -87,8 +91,6 @@ z.freeAll;\
 					s.set(\cf5 \\rel\cf0 ,((24+l)/p.log.ceil)/i.log10);\
 					s.set(\cf5 \\pan\cf0 ,(1/(i.factors[j])) * (-1**(i+j+k+l)));\
 					s.set(\cf5 \\atk\cf0 ,(1/freq**0.5) * (i.factors[j]/i.log10) * (1/(i.log*2)));\
-					s.set(\cf5 \\atk\cf0 ,(1/freq**0.5) * (i.factors[j].sqrt *i.log10) * (1/(i.log*2)));\
-\
 					s.set(\cf5 \\sus\cf0 ,-1 * i.factors[j].log2);\
 					s.set(\cf5 \\gate\cf0 ,1);\
 					s.set(\cf5 \\amp\cf0 ,(((1/((p-(0.3)).log10)) * 0.005 / ((k/p.log10.ceil)+1))*i.factors[j].sqrt)/(l+1));\
