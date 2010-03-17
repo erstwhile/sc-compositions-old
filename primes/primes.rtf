@@ -13,7 +13,8 @@ z = \cf3 Server\cf0 .internal;\
 \
 ~clock = \cf3 TempoClock\cf0 .new(1/2,0,0,16384);\
 ~clock.tempo_(2.5);\
-~i= (2**4).asInt;\
+~tempo  =8/8;\
+~i= ((2**4) ).asInt;\
 ~r = \cf3 Routine\cf0  \{\
 	\cf3 var\cf0  th = 	(3..12).collect(3**\cf3 _\cf0 );	\
 	((2**16)).asInt.do(\{\cf3 |z|\cf0 \
@@ -72,7 +73,7 @@ z.freeAll;\
 						s = \cf3 Synth\cf0 (\cf4 "just-sine"\cf0 );\
 						p=p.nextPowerOfTwo;\
 					\
-						freq =((p *(2**((i.log2.ceil %4)+i.log10.floor) )*(([(\{\cf3 |j|\cf0 j=(2*j)+1+(i.log2.ceil%2); (j/j.nextPowerOfTwo)\}!( (hf / p).ceil.asInt)),1]).flat *.x n.permute(i).wrapAt(l+j+k+p -2) *.x [1,9/8].wrapAt(ill.sort.wrapAt(i.log.floor-1)) /16).flat.permute(ii).wrapAt(l+j+k+p -2 ) * (2**i.factors.size)) * (1/2**l));\
+						freq =((p *(2**((i.log2.ceil %4)+i.log10.floor) )*(([(\{\cf3 |j|\cf0 j=(1*j)+1+(i.log2.ceil%2); (j/j.nextPowerOfTwo)\}!( (hf / 1).ceil.asInt)),1]).flat *.x n.permute(i).wrapAt(l+j+k *(p )) *.x [1,9/8].wrapAt(ill.sort.wrapAt(i.log.floor-1)) /16).flat.permute(ii).wrapAt(l+j+k+p -2 ) * (2**i.factors.size)) * (1/2**l));\
 						\
 						(freq > (2**14)).if (\{freq = freq * (1/(2**7))\});\
 						(freq > (2**14)).if (\{freq = freq * (1/(2**7))\});\
@@ -86,7 +87,7 @@ z.freeAll;\
 						\
 	\
 						[\
-						\{s.set(\cf5 \\rel\cf0 ,(4/(4+(i.log2/19).floor))*((24+l)/p.log.ceil)/i.log10);\},						\{s.set(\cf5 \\rel\cf0 ,(4/(4+(i.log2/19).floor))*((0.7+l)*p.log2.ceil)/i.log10);\}\
+						\{s.set(\cf5 \\rel\cf0 ,((4/(4+(i.log2/19).floor))*((24+l)/p.log.ceil)/i.log10)*~tempo);\},						\{s.set(\cf5 \\rel\cf0 ,((4/(4+(i.log2/19).floor))*((0.7+l)*p.log2.ceil)/i.log10)*~tempo);\}\
 						].wrapAt(ill.reverse.wrapAt(logTen+1)).value;\
 	\
 						s.set(\cf5 \\pan\cf0 ,(1/(i.factors[j])) * (-1**(i+j+k+l)));\
