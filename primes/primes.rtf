@@ -73,7 +73,7 @@ z.freeAll;\
 						s = \cf3 Synth\cf0 (\cf4 "just-sine"\cf0 );\
 						p=p.nextPowerOfTwo;\
 					\
-						freq =((p *(2**((i.log2.ceil %4)+i.log10.floor) )*(([(\{\cf3 |j|\cf0 j=(1*j)+1+(i.log2.ceil%2); (j/j.nextPowerOfTwo)\}!( (hf / 1).ceil.asInt)),1]).flat *.x n.permute(i).wrapAt(l+j+k *(p )) *.x [1,9/8].wrapAt(ill.sort.wrapAt(i.log.floor-1)) /16).flat.permute(ii).wrapAt(l+j+k+p -2 ) * (2**i.factors.size)) * (1/2**l));\
+						freq =((p *(2**((i.log2.ceil %4)+i.log10.floor) )*(([(\{\cf3 |j|\cf0 j=(1*j)+1+(i.log2.ceil%2); (j/j.nextPowerOfTwo)\}!( (hf / p).ceil.asInt)),1]).flat *.x n.permute(i).wrapAt(l+j+k *(p)) *.x [1,9/8].wrapAt(ill.sort.wrapAt(i.log.floor-1)) /16).flat.permute(ii).wrapAt(l+j+k+p -2 ) * (2**i.factors.size)) * (1/2**l));\
 						\
 						(freq > (2**14)).if (\{freq = freq * (1/(2**7))\});\
 						(freq > (2**14)).if (\{freq = freq * (1/(2**7))\});\
