@@ -13,9 +13,10 @@ z = \cf3 Server\cf0 .internal;\
 \
 ~clock = \cf3 TempoClock\cf0 .new(1/2,0,0,16384);\
 ~clock.tempo_(2.5);\
-~tempo = 6/8;\
+~tempo = 8/8;\
 ~i= (2**4).asInt;\
 ~r = \cf3 Routine\cf0  \{\
+	1.wait;\
 	((2**16)).asInt.do(\{\cf3 |z|\cf0 \
 		\cf3 var\cf0  i=~i;\
 		~play.value(i.asInt,z.asInt);\
@@ -29,6 +30,9 @@ z.freeAll;\
 \
 ~inc = \{\cf3 |i|\cf0 \
 	\cf3 var\cf0  a = ((i.factors[0]**(i.log10.ceil)));\
+	(i > (2**19)).if(\{~tempo = 7/8\});\
+	(i > (2**20)).if(\{~tempo = 6/8\});\
+\
 	(i+a).asInt;\
 \};\
 \
@@ -88,9 +92,9 @@ z.freeAll;\
 					s.set(\cf5 \\pan\cf0 ,(1/(i.factors[j])) * (-1**(i+j+k+l)));\
 					s.set(\cf5 \\atk\cf0 ,(1/freq) * (i.factors[j]) * (1/(i.log*2)));\
 \
-					s.set(\cf5 \\sus\cf0 ,-1 * i.factors[j].log);\
+					s.set(\cf5 \\sus\cf0 ,-1 * i.factors[j].log10);\
 					s.set(\cf5 \\gate\cf0 ,1);\
-					s.set(\cf5 \\amp\cf0 ,((2/((p+100).log10))*((1/((p+(0.8)).log10)) * 0.005 / ((k/p.log10.ceil)+1))*(pp.sqrt*(pp+100).log10))/(l+1));\
+					s.set(\cf5 \\amp\cf0 ,((2/((p+100).log10))*((1/((p+(0.5)).log10)) * 0.005 / ((k/p.log10.ceil)+1))*(3 * (pp.sqrt**0.8))));\
 					\});\
 				w.(pp,i).wait;\
 				\});\
@@ -114,8 +118,6 @@ z.freeAll;\
 \
 \
 \
-\
-\
 ~clock.play(~r,0);\
-z.scope;\
+//z.scope;\
 }
