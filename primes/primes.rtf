@@ -13,7 +13,7 @@ z = \cf3 Server\cf0 .internal;\
 \
 ~clock = \cf3 TempoClock\cf0 .new(1/2,0,0,16384);\
 ~clock.tempo_(2.5);\
-~tempo = 6/8;\
+~tempo = 8/8;\
 ~i= (2**4).asInt;\
 ~r = \cf3 Routine\cf0  \{\
 	\cf3 var\cf0  th = 	(3..12).collect(3**\cf3 _\cf0 );	\
@@ -84,7 +84,7 @@ z.freeAll;\
 					\
 \
 					[\
-					\{s.set(\cf5 \\rel\cf0 ,((4/(4+(i.log2/19).floor))*((24+l)/p.log.ceil)/i.log10)*~tempo);\},					\{s.set(\cf5 \\rel\cf0 ,((4/(4+(i.log2/19).floor))*((0.7+l)*p.log2.ceil)/i.log10)*~tempo);\}\
+					\{s.set(\cf5 \\rel\cf0 ,((4/(4+(i.log2/19).floor))*((24+l)/pp.log2.ceil)/i.log10)*~tempo);\},					\{s.set(\cf5 \\rel\cf0 ,((4/(4+(i.log2/19).floor))*((0.7+l)*p.log2.ceil)/i.log10)*~tempo);\}\
 					].wrapAt(ill.reverse.wrapAt(logTen+1)).value;\
 \
 					s.set(\cf5 \\pan\cf0 ,(1/(i.factors[j])) * (-1**(i+j+k+l)));\
