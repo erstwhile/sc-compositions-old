@@ -1,0 +1,67 @@
+{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf540
+{\fonttbl\f0\fnil\fcharset0 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
+\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\fs26 \cf0 (\
+z = \cf2 Server\cf0 .internal;\
+\cf2 SynthDef\cf0 (\cf3 "just-sine"\cf0 ,\{\cf2 |freq=100,freq2=50, atk=1, rel=1, sus=1, amp=0.005,pan =0,gate=0,f2=0.001|\cf0 \
+	\cf2 Out\cf0 .ar(0,\cf2 Mix\cf0 .ar(\cf2 Pan2\cf0 .ar(\cf2 FSinOsc\cf0 .ar([1,1] * freq,0,48*amp / (16+freq/freq.log)),pan)) * \cf2 EnvGen\cf0 .ar(\cf2 Env\cf0 .perc(0.03 * atk, rel, 1, \cf4 'sine'\cf0 ),gate, doneAction:2) );\}).load(z);\
+)\
+~post = 0;\
+z.freeAll;\
+(\
+~post = 0;\
+4.do(\{\cf2 |k|\cf0 \
+	\cf2 Routine\cf0  \{\
+	([[5,6,7,8].wrapAt(k),6,7,8].product).do(\{\cf2 |i|\cf0 \
+		~play.(i,k);\
+		\});\
+	\}.play;\
+\});\
+\
+~play = \{\cf2 |i,k|\cf0 \
+		\cf2 var\cf0  ff,p,rr;\
+		i=i+2;\
+		i=i.asInt;\
+		p = ([12,16,18,24,32] *.x [12,16,18,24,[25,30,27,28].wrapAt(k),32,36]);\
+		p = [p,p.sort].wrapAt(i.log2);\
+		ff = ([1,2,4,8,16,32].sort *.x p).wrapAt(i);\
+		\cf5 //ff =ff  * (\{|j|j=p.wrapAt(i) +(16**4); j=2*j/j.nextPowerOfTwo\}).value(i);\
+		Routine \{\cf0 \
+		6.do(\{\cf2 |ii|\cf0 \
+			\cf2 var\cf0  s, freq;\
+			((i > 16).and(z.peakCPU <90)).if(\{\
+			s = \cf2 Synth\cf0 (\cf3 "just-sine"\cf0 );\
+			s.set(\cf4 \\amp\cf0 ,0.001 * ((i < 64 ).if(\{i.log2\},\{6\})));\
+			(z.peakCPU > 90).if(\{i.postln\});	\
+			freq = ff;\
+			freq = freq * (\{\cf2 |j|\cf0 j=j+1; j=((j)*(i.factors[0].log2.ceil+ 16 + ([0,1,2,3,4,5,6,7,8,9]* i.factors.reverse[0].log10.ceil).permute(i)/8).wrapAt(i+ii)+(p*4).reject(\cf2 _\cf0 <256).permute(i).wrapAt(i).nextPowerOfTwo); j/j.nextPowerOfTwo\}).value(ii);\
+\
+			freq = freq + (0.25 *(\{\cf2 |j|\cf0 j \}! i.log2.ceil.asInt).permute(i).wrapAt(i+ii));\
+			s.set(\cf4 \\freq\cf0 ,freq);\
+			s.set(\cf4 \\pan\cf0 , ((i+ii)%3) - 1);\
+			s.set(\cf4 \\rel\cf0 ,(3 / i.factors[0].log2)*((i%11)+1));\
+			s.set(\cf4 \\atk\cf0 ,((i%9)+1)*i.log2/(8*i.factors[0].log2));\
+			s.set(\cf4 \\sus\cf0 ,1);\
+			s.set(\cf4 \\gate\cf0 ,1);\
+			(((3 / i.factors[0].log2)*((i%11)+1))/6).wait;\
+			\});\});\}.play;\
+			\
+			(0.5 * (i.log2.ceil/[5,6,7,8].wrapAt(k))).wait;\
+			(~post==1).if(\{\cf3 "k: "\cf0 .post; k.post; \cf3 "i: "\cf0 .post; i.postln; \});\
+	\};\
+)\
+\
+~post=0;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf5 /*\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\fs18 \cf5 k: 0i: 1269\
+k: 3i: 1919\
+k: 1i: 1486\
+k: 2i: 1703\
+*/}
