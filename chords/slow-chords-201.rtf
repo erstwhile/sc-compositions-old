@@ -17,27 +17,29 @@ z = \cf3 Server\cf0 .internal;\
 z.scope;\
 z.freeAll;\
 (\
-~i =2;\
+~i =2048;\
 \
 ~post = 0;\
-5.do(\{\cf3 |k|\cf0 \
+6.do(\{\cf3 |k|\cf0 \
 	\cf3 Routine\cf0  \{\
-	([[5,6,7,8,9].wrapAt(k),6,7,8,2].product).do(\{\cf3 |i|\cf0 \
+	([[4,6,6,6,8,8].wrapAt(k),6,6,8,2].product).do(\{\cf3 |i|\cf0 \
 		~play.(i,k);\
 		\});\
 	\}.play;\
 \});\
-~tempo = 1;\
+\
+\
+~tempo = 16;\
 ~play = \{\cf3 |i,k|\cf0 \
 		\cf3 var\cf0  ff,p,rr;\
-		i=i+2;\
+		i=i+640+(k*8);\
 		i=i.asInt;\
-		p = ([12,16,18,24,32] *.x [12,16,18,24,[25,26,27,28,30].wrapAt(k),32,36]);\
+		p = ([12,16,18,24,32] *.x [12,16,18,24,[25,26,27,28,29,30].wrapAt(k),32,36]);\
 		p = [p,p.sort].wrapAt(~i.log2);\
-		ff = ([1,2,4,8,16,32].sort *.x p).wrapAt(i);\
+		ff = ([1/2,1,2,4,8,16,32].sort *.x p).wrapAt(i);\
 		\cf2 //ff =ff  * (\{|j|j=p.wrapAt(i) +(16**4); j=2*j/j.nextPowerOfTwo\}).value(i);\cf0 \
 		\cf3 Routine\cf0  \{\
-		6.do(\{\cf3 |ii|\cf0 \
+		12.do(\{\cf3 |ii|\cf0 \
 			\cf3 var\cf0  s, freq;\
 			((i > 2).and(z.peakCPU <80)).if(\{\
 			s = \cf3 Synth\cf0 (\cf4 "just-sine"\cf0 );\
@@ -45,22 +47,22 @@ z.freeAll;\
 			(z.peakCPU > 85).if(\{i.postln\});	\
 			freq = ff;\
 			\cf2 //these harmonics are the secret sauce\cf0 \
-			freq = freq * (\{\cf3 |j|\cf0 j=j+1; j=((j)*(i.factors[0].log2.floor+ 0 + ((\{|x|x\}!~i.log2.ceil.asInt)* ((~i)/~i.log2).floor.asInt.factors.reverse[0].log10.ceil).permute(i)/6).wrapAt(i+ii)+(p*4).reject(\cf3 _\cf0 <256).permute(i).wrapAt(i).nextPowerOfTwo); j/j.nextPowerOfTwo\}).value(ii);\
+			freq = freq * (\{\cf3 |j|\cf0 j=j+1; j=((j)*(i.factors[0].log2.ceil+ ~i.factors[0].log2 + ((\{|x|x\}!~i.log2.ceil.asInt)* ~i.factors.reverse[0].log10.ceil).permute(i)/6).wrapAt(i+ii)+(p*4).reject(\cf3 _\cf0 <256).permute(i).wrapAt(i).nextPowerOfTwo); j/j.nextPowerOfTwo\}).value(ii);\
 \
 			freq = freq + (0.25 *(\{\cf3 |j|\cf0 j \}! i.log2.ceil.asInt).permute(i).wrapAt(i+ii));\
 			s.set(\cf5 \\freq\cf0 ,freq);\
 			s.set(\cf5 \\pan\cf0 , ((i+ii)%3) - 1);\
-			s.set(\cf5 \\rel\cf0 ,((~tempo * 3) / i.factors[0].log2)*((i%11)+1));\
-			s.set(\cf5 \\atk\cf0 ,((i%9)+1)*(i.log2*~tempo)/(8*i.factors[0].log2));\
+			s.set(\cf5 \\rel\cf0 ,((~tempo * 1) / i.factors[0].log2)*((i%11)+1));\
+			s.set(\cf5 \\atk\cf0 ,((i%9)+1)*(i.log2*~tempo)/(4*i.factors[0].log2));\
 			s.set(\cf5 \\sus\cf0 ,1);\
 			s.set(\cf5 \\gate\cf0 ,1);\
 			\
 			\cf2 //smear the tones a little - wait, fade in each harmony in sequence\cf0 \
-			(((3 *~tempo / i.factors[0].log2)*((i%11)+1))/6).wait;\
+			(((~tempo * 1) / i.factors[0].log2)*((i%11)+1)/12).wait;\
 			\});\});\}.play;\
 			\
 			\cf2 //5 melodic lines, each at their own tempo, inspired by reading JLA's books\cf0 \
-			(0.5 * ~tempo * (i.log2.ceil/[5,6,7,8,9].wrapAt(k))).wait;\
+			( ~tempo * 2 *(i.log2.ceil/[4,6,6,6,8,8].wrapAt(k))).wait;\
 			~i = ~i+1;\
 			(~post==1).if(\{\cf4 "k: "\cf0 .post; k.post; \cf4 "i: "\cf0 .post; i.postln; \cf4 "~i: "\cf0 .post; ~i.postln\});\
 	\};\

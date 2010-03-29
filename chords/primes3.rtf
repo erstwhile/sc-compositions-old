@@ -14,7 +14,7 @@ z = \cf3 Server\cf0 .internal;\
 ~clock = \cf3 TempoClock\cf0 .new(1/2,0,0,16384);\
 ~clock.tempo_(2.5);\
 ~tempo = 8/8;\
-~i= (2**23).asInt;\
+~i= (2**4).asInt;\
 ~r = \cf3 Routine\cf0  \{\
 	((2**16)+(2**14)).asInt.do(\{\cf3 |x|\cf0 \
 		\cf3 var\cf0  i=~i;\
@@ -61,7 +61,7 @@ z.freeAll;\
 		r = \cf3 Routine\cf0  \{\
 		i.factors.do(\{\cf3 |p,j|\cf0 \
 			\cf3 var\cf0  rr = \cf3 Routine\cf0  \{\
-				(p.log2 * ((i > (2**21)).if(\{3/4\},\{1\}))).ceil.asInt.do(\{\cf3 |k|\cf0 \
+				(p.log2 * ((i > (2**21)).if(\{2/4\},\{1\}))).ceil.asInt.do(\{\cf3 |k|\cf0 \
 				\cf3 var\cf0  pp = i.factors[j].asInt;\
 				(z.peakCPU > 90).if(\{z.freeAll\});\
 \
@@ -110,18 +110,6 @@ z.freeAll;\
 \};\
 \
 \
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
 ~clock.play(~r,0);\
 z.scope;\
-}
+\'a0}
