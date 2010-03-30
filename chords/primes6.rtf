@@ -14,7 +14,7 @@ z = \cf3 Server\cf0 .internal;\
 ~clock = \cf3 TempoClock\cf0 .new(1/2,0,0,16384);\
 ~clock.tempo_(2.5);\
 ~tempo = 8/8;\
-~i= (2**4).asInt;\
+~i= (2**23).asInt;\
 ~r = \cf3 Routine\cf0  \{\
 //
 \fs18 75296
@@ -57,8 +57,8 @@ z.freeAll;\
 		hf.postln;\
 		w = ~w.wrapAt(ill.reverse.wrapAt(logTen - 3));\
 \
-		n = [[16,18,24,27,36,40],[16,20,24,30,36,45,54],[45*3/4,20,27,30,45,54]].permute(ill.reverse[0].asInt).wrapAt(ill.reverse.wrapAt(logTen));\
-		\
+		n = [[16,18,24,27,36,40],[16,20,24,30,36,45,54],[100/3,25,30,45/2],[45*3/4,20,27,30,45,54]].permute(il.reverse[0..4].sum.asInt).wrapAt(ill.sum /(2**(i.log10.floor)-2));\
+		n.postln;\
 		i.postln;\
 		i.factors.postln;		\
 		r = \cf3 Routine\cf0  \{\
