@@ -1,0 +1,177 @@
+{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf540
+{\fonttbl\f0\fnil\fcharset0 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
+\red0\green115\blue0;}
+\deftab720
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+
+\f0\fs18 \cf0  ~page = \{|url = "http://localhost:8888/"|\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf2 	var\cf0  p, a, l, d;\
+	p= ("curl "+url).unixCmd;\
+	a =[];\
+	10.do(\{\
+	l = p.getLine;\
+		a.add(l);\
+	\});\
+	a.collect(\{|item|\
+		d=0;		\
+		item.size.do(\{|i|\
+			d=d+item[i].asUnicode.asInt;\
+		\});\
+		d;\
+	\}).reject(_==0);\
+//	[32,36,40,48,60];\
+\};\
+~page.();\
+/*\
+10.do(\{\
+	l = p.getLine;\
+	a.add(l);\
+	\});\
+//		while(\{l.notNil\}, \{a = a.add(l); l = p.getLine; \});\
+	\
+*/\
+\
+\
+~words.size.postln;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\fs26 \cf3 \
+//cheerful and ethereal\cf0 \
+z = \cf2 Server\cf0 .internal;\
+\
+\cf3 //pink noise amplitude curve\
+\cf2 SynthDef\cf0 (\cf4 "just-sine"\cf0 ,\{\cf2 |freq=100,freq2=50, atk=1, rel=1, sus=1, amp=0.005,pan =0,gate=0|\cf0 \
+	\cf2 Out\cf0 .ar(0,\cf2 Mix\cf0 .ar(\cf2 Pan2\cf0 .ar(\cf2 FSinOsc\cf0 .ar( [1,1] * freq,0,256 * amp/freq),pan)) * \cf2 EnvGen\cf0 .ar(\cf2 Env\cf0 .perc(atk,rel, 1, sus),gate, doneAction:2) );\}).load(z);\
+	\
+~clock = \cf2 TempoClock\cf0 .new(1/2,0,0,16384);\
+~clock.tempo_(5/2);\
+~tempo = 8/8;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+
+\fs18 \cf0 ~urls = ["http://192.168.0.11:8888/games/","http://192.168.0.11:8888/specials/","http://search.twitter.com/search.atom?q=%23FollowFriday"];\
+~urls = ["http://search.twitter.com/search.atom?q=%23FollowFriday"];\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\fs26 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+
+\fs18 \cf0 ~clock.play(Routine \{\
+var urls;\
+inf.do(\{|k| \
+~words =~page.(~urls.wrapAt(k));\
+~urls.wrapAt(k).postln;\
+~words.postln;\
+~i =0;\
+16.wait;\
+\});\
+\},0);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\fs26 \cf0 \
+\
+~r = \cf2 Routine\cf0  \{\
+	((2**16)+(2**14)).asInt.do(\{\cf2 |x|\cf0 \
+		\cf2 var\cf0  w;\
+		w = ~words[~i%~words.size.asInt].asUnicode.asInt;\
+		~play.value(w.asInt,x.asInt);\
+		~i = ~i+1;\
+		\cf4 "w: "\cf0 .post;\
+		w.postln;\
+	\});\
+240.wait;\
+z.freeAll;\
+\};\
+\
+~inc = \{\cf2 |i|\cf0 \
+	\cf2 var\cf0  a = ((2**(i.log10.ceil)));\
+	(i+a).asInt;\
+\};\
+~ii =0;\
+\
+	\
+~w = [ \{|p,i|1/2\}];\
+\
+~play = \{\cf2 |i,x|\cf0 \
+		\cf2 var\cf0  il,ill,r,w,hf,jf,ii,n,logTen;\
+		ii=i;\
+		il = (\{\cf2 |x|\cf0 ((2**x)*(i/(2**x)%2).floor)\}!i.log2.ceil.asInt);\
+		ill = (1+il).log2.floor;\
+		ill.postln;\
+		il.postln;\
+		i.postln;\
+		logTen = i.log10.ceil.asInt;\
+		(\{\cf2 |i|\cf0 i\}!~w.size).wrapAt(ill.reverse.wrapAt(logTen-3)).postln;\
+		hf = ([2**(i.log10+2).ceil,il.reject(\cf2 _\cf0 ==0).reject(\cf2 _\cf0  > (2**16))].flat.reverse.wrapAt(logTen+2)).floor.asInt;\
+		hf.postln;\
+		w = ~w.wrapAt(ill.reverse.wrapAt(logTen - 3));\
+\
+		n = [[16,18,24,27,36,40],[16,20,24,30,36,45,54],[45*3/4,20,27,30,45,54]].permute(ill.reverse[0].asInt).wrapAt(ill.reverse.wrapAt(logTen));\
+		\
+		i.postln;\
+		i.factors.postln;		\
+		r = \cf2 Routine\cf0  \{\
+		i.factors.do(\{\cf2 |p,j|\cf0 \
+			\cf2 var\cf0  rr = \cf2 Routine\cf0  \{\
+				(p.log2 * ((i > (2**21)).if(\{3/4\},\{1\}))).ceil.asInt.do(\{\cf2 |k|\cf0 \
+				\cf2 var\cf0  pp = i.factors[j].asInt;\
+				(z.peakCPU > 90).if(\{z.freeAll\});\
+\
+				(p.log10.ceil).asInt.do(\{\cf2 |l|\cf0 \
+					\cf2 var\cf0  s,freq;\
+					s = \cf2 Synth\cf0 (\cf4 "just-sine"\cf0 );\
+					p=p.nextPowerOfTwo;\
+									\
+					freq =((p *(2**((i.log2.ceil %4)+i.log10.floor) ) *.x n.permute(i).wrapAt((l+j+k+pp -2)*(1+(i.factors[j]%2))) *.x [1,9/8].wrapAt(ill.sort.wrapAt(i.log.floor-1)) /16) * (2**i.factors.size)) * (1/2**l);\
+					\
+					freq = freq * (\{\cf2 |jj|\cf0 jj=jj+1; jj=(jj*(1 + ((\{\cf2 |q|\cf0 q\}!i.log2.ceil)*i.factors.reverse[0].log10.floor).permute(i)/32).wrapAt(j+k+l)+hf); jj/jj.nextPowerOfTwo\}).value(j+k+l);\
+\
+					\
+					(freq > (2**14)).if (\{freq = freq * (1/(2**7))\});\
+					(freq > (2**14)).if (\{freq = freq * (1/(2**7))\});\
+					(freq > (2**14)).if (\{freq = freq * (1/(2**7))\});\
+					(freq > (2**14)).if (\{freq.postln; freq = freq * (1/(2**7))\});\
+\
+					(freq < (2**7)).if (\{freq = freq * 2\});\
+					(freq > 192).if(\{freq = freq + (\{\cf2 |i|\cf0 i * (2.5/8)\}!(i.log/2).ceil.asInt).permute(i).wrapAt(j +pp -2)\});\
+\
+					s.set(\cf5 \\freq\cf0 , freq);\
+					\
+\
+					s.set(\\rel,0.2*~tempo);\
+					s.set(\cf5 \\pan\cf0 ,(2/(i.factors[j])) * (-1**((ii+j)%3)));\
+\
+					s.set(\\atk,0.1*~tempo);\
+					s.set(\cf5 \\sus\cf0 ,-1 * i.factors[j].log);\
+					s.set(\cf5 \\gate\cf0 ,1);\
+					s.set(\cf5 \\amp\cf0 ,((2/((p+100).log10))*((1/((p+(1)).log10)) * 0.015 / ((k/p.log10.ceil)+1))*(i.factors[j].sqrt * (2/(pp+100).log10)))/(l+1));\
+					\});\
+				w.(pp,i).wait;\
+				\});\
+				\
+			\};\
+			~clock.play(rr,0);\
+			\});\
+		\};\
+		~clock.play(r,0);\
+		(1/2).wait;\
+\};\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+~clock.play(~r,0);\
+z.scope;\
+}

@@ -1,0 +1,59 @@
+{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf540
+{\fonttbl\f0\fnil\fcharset0 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\fs26 \cf0 (\
+z=Server.internal;\
+\
+\cf2 SynthDef\cf0 (\cf3 "just-sine"\cf0 ,\{\cf2 |freq=100,freq2=50, atk=1, rel=1, sus=1, amp=0.005,pan =0,gate=0,f2=0.001|\cf0 \
+	\cf2 Out\cf0 .ar(0,\cf2 Mix\cf0 .ar(\cf2 Pan2\cf0 .ar(\cf2 FSinOsc\cf0 .ar([1,1] * freq,0,48*amp / (16+freq/freq.log)),pan)) * \cf2 EnvGen\cf0 .ar(\cf2 Env\cf0 .perc(atk,rel, 1, 'sine'),gate, doneAction:2) );\}).load(z);\
+)\
+~post = 0;\
+(\
+~clock = \cf2 TempoClock\cf0 .new(1/2,0,0,16384);\
+~clock.tempo_(1/2);\
+\
+~post = 0;\
+~r = 4.do(\{\cf2 |k|\
+	var r = Routine\cf0  \{\
+	([[5,6,7,8].wrapAt(k),6,7,8].product).do(\{\cf2 |i|\cf0 \
+		~play.(i,k);\
+		\});\
+	\};\
+	~clock.play(r,0);\
+\});\
+\
+z.freeAll;\
+~tempo =2.5;\
+~play = \{\cf2 |i,k|\cf0 \
+		\cf2 var\cf0  ff,p;\
+		i=i+2;\
+		i=i.asInt;\
+		p = ([12,16,18,24,32] *.x [12,16,18,24,[25,30,27,28].wrapAt(k),32,36]);\
+		p = [p,p.sort].wrapAt(i.log2);\
+		ff = ([1,2,4,8,16,32].sort *.x p * 2/3).wrapAt(i);\
+		ff =ff  * (\{\cf2 |j|\cf0 j=p.wrapAt(i) +(16**4); j=2*j/j.nextPowerOfTwo\}).value(i);\
+		\
+		6.do(\{\cf2 |ii|\cf0 \
+			\cf2 var\cf0  s, freq;\
+			s = \cf2 Synth\cf0 (\cf3 "just-sine"\cf0 );\
+			s.set(\cf4 \\amp\cf0 ,0.001 * ((i < 64 ).if(\{i.log2\},\{6\})));\
+			(z.peakCPU > 90).if(\{i.postln\});	\
+			freq = ff;\
+			(freq > 192).if(\{freq = freq * (\{\cf2 |j|\cf0 j=j+1; j=((j)*([11,13,17,19,23,29,31,37].permute(i)/8).wrapAt(i+ii)+(p*4).reject(\cf2 _\cf0 <256).permute(i).wrapAt(i).nextPowerOfTwo); j/j.nextPowerOfTwo\}).value(ii)\});\
+\
+			freq = freq + (0.25 *(\{\cf2 |j|\cf0 j \}! i.log2.ceil.asInt).permute(i).wrapAt(i));\
+			s.set(\cf4 \\freq\cf0 ,freq);\
+			s.set(\cf4 \\pan\cf0 , ((i+ii)%3) - 1);\
+			s.set(\cf4 \\rel\cf0 ,((4*~tempo) / i.factors[0].log2)*((i%8)+1));\
+			s.set(\cf4 \\atk\cf0 ,(~tempo * (i%8)+1)*i.log2/(4*i.factors[0].log2));\
+			s.set(\cf4 \\sus\cf0 ,1);\
+			s.set(\cf4 \\gate\cf0 ,1);\
+			\});\
+			((i.log2.ceil)/[5,6,7,8].wrapAt(k)).wait;\
+			(~post==1).if(\{\cf3 "k: "\cf0 .post; k.post; \cf3 "i: "\cf0 .post; i.postln; \});\
+	\};\
+)\
+~post =1;}
