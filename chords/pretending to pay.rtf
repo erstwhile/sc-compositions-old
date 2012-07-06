@@ -4,19 +4,19 @@
 \red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f0\fs26 \cf2 //slow and unfocused\cf0 \
-z = \cf3 Server\cf0 .internal;\
+\f0\fs26 \cf2 //pretending to work\
+\cf0 z = \cf3 Server\cf0 .internal;\
 \
 \cf2 //pink noise amplitude curve\cf0 \
 \cf3 SynthDef\cf0 (\cf4 "just-sine"\cf0 ,\{\cf3 |freq=100,freq2=50, atk=1, rel=1, sus=1, amp=0.005,pan =0,gate=0,f2=2,a2=2|\cf0 \
-	\cf3 Out\cf0 .ar(0,\cf3 Mix\cf0 .ar(\cf3 Pan2\cf0 .ar(\cf3 FSinOsc\cf0 .ar(  [1/2,1/2] * freq,0,96 * amp/freq),pan)) * \cf3 EnvGen\cf0 .ar(\cf3 Env\cf0 .perc(atk,rel, 1, sus),gate, doneAction:2) );\}).load(z);\
+	\cf3 Out\cf0 .ar(0,\cf3 Mix\cf0 .ar(\cf3 Pan2\cf0 .ar(\cf3 FSinOsc\cf0 .ar(  [1,1] * freq,0,128 * amp/freq),pan)) * \cf3 EnvGen\cf0 .ar(\cf3 Env\cf0 .perc(atk,rel, 1, sus),gate, doneAction:2) );\}).load(z);\
 	\
 ~clock = \cf3 TempoClock\cf0 .new(1/2,0,0,16384);\
-~clock.tempo_(2.5/4);\
+~clock.tempo_(2.5);\
 ~tempo = 5/32;\
 ~i= ((2**24)+(2**23)+(2**22)).asInt;\
 ~r = \cf3 Routine\cf0  \{\
-	(2**11).asInt.do(\{\cf3 |x|\cf0 \
+	(2**16).asInt.do(\{\cf3 |x|\cf0 \
 		\cf3 var\cf0  i=~i;\
 		~play.value(i.asInt,x.asInt);\
 		~i = ~inc.value(i.asInt);\
@@ -32,7 +32,9 @@ z.freeAll;\
 	(i+a).asInt;\
 \};\
 	\
-~w = [ \{\cf3 |p,i|\cf0 (p/p.nextPowerOfTwo)/4\}];\
+~w = [  \
+	\{\cf3 |p,i|\cf0 (p.log2.ceil/p.log2.nextPowerOfTwo)*i.factors.reverse[0].log10.ceil\}\
+];\
 \
 ~play = \{\cf3 |i,x|\cf0 \
 		\cf3 var\cf0  il,ill,r,w,hf,jf,ii,n,logTen;\
@@ -57,36 +59,37 @@ z.freeAll;\
 		i.postln;\
 		i.factors.postln;		\
 		r = \cf3 Routine\cf0  \{\
-		i.factors.reject(\{|i|i < 3\}).do(\{\cf3 |p,j|\cf0 \
+		i.factors.do(\{\cf3 |p,j|\cf0 \
 			\cf3 var\cf0  rr = \cf3 Routine\cf0  \{\
-				(p.log2 ).ceil.asInt.do(\{\cf3 |k|\cf0 \
+				(p.log2 * ((i > (2**21)).if(\{3/4\},\{1\}))).ceil.asInt.do(\{\cf3 |k|\cf0 \
 				\cf3 var\cf0  pp = i.factors[j].asInt;\
 				(z.peakCPU > 90).if(\{z.freeAll\});\
 \
-				(p.log10.ceil * ((i > (2**21)).if(\{4/4\},\{1\}))).ceil.asInt.do(\{\cf3 |l|\cf0 \
+				(p.log10.ceil * ((i > (2**21)).if(\{3/4\},\{1\}))).ceil.asInt.do(\{\cf3 |l|\cf0 \
 					\cf3 var\cf0  s,freq;\
 					s = \cf3 Synth\cf0 (\cf4 "just-sine"\cf0 );\
 					p=p.nextPowerOfTwo;\
 									\
-					freq =((p *(2**((i.log2.ceil %4)+i.log10.floor) ) *.x n.permute(0).wrapAt(((j*(0**il.sort.reverse.wrapAt(logTen)))+l+k+pp -2)) *.x [1,9/8].wrapAt(ill.sort.wrapAt(i.log.floor-1)) /16) * (2**i.factors.size)) * (1/1**l);\
+					freq =((p *(2**((i.log2.ceil %4)+i.log10.floor) ) *.x n.permute(0).wrapAt(((j*(0**il.sort.reverse.wrapAt(logTen)))+k+pp -2)) *.x [1,9/8].wrapAt(ill.sort.wrapAt(i.log.floor-1)) /16) * (2**i.factors.size)) * (1/1**l);\
 					\
 					freq = freq * (\{\cf3 |jj|\cf0 jj=jj+1; jj=(jj*(1 + ((\{\cf3 |q|\cf0 q\}!i.log2.ceil)*i.factors.reverse[0].log10.floor).permute(i)/32).wrapAt(j+k+l)+hf); jj/jj.nextPowerOfTwo\}).value(j+k+l);\
 \
 					\
-					(freq > (2**15)).if (\{freq = freq * (1/(2**7))\});\
-					(freq > (2**15)).if (\{freq = freq * (1/(2**7))\});\
-					(freq > (2**15)).if (\{freq = freq * (1/(2**7))\});\
-					(freq > (2**15)).if (\{freq = freq * (1/(2**7))\});\
-					(freq > (2**15)).if (\{freq.postln; freq = freq * (1/(2**7))\});\
+					(freq > (2**14)).if (\{freq = freq * (1/(2**7))\});\
+					(freq > (2**14)).if (\{freq = freq * (1/(2**7))\});\
+					(freq > (2**14)).if (\{freq = freq * (1/(2**7))\});\
+					(freq > (2**14)).if (\{freq = freq * (1/(2**7))\});\
+					(freq > (2**14)).if (\{freq.postln; freq = freq * (1/(2**7))\});\
 \
 					(freq < (2**7)).if (\{freq = freq * 2\});\
+					(freq > 192).if(\{freq = freq + (\{\cf3 |i|\cf0 i * (2.5/8)\}!(i.log/2).ceil.asInt).permute(i).wrapAt(j +pp -2)\});\
 \
 					s.set(\cf5 \\freq\cf0 , freq);\
 					\
 \
 					[\
-					\{s.set(\cf5 \\rel\cf0 ,((24+l)/pp.log2.ceil)*~tempo);\},					\
-					\{s.set(\cf5 \\rel\cf0 ,(0.33 * (3+l )*pp.log2.clip(1,10))*~tempo);\}\
+					\{s.set(\cf5 \\rel\cf0 ,((28+l)/pp.log2.ceil)*~tempo);\},					\
+					\{s.set(\cf5 \\rel\cf0 ,(0.33 * (3+l)*pp.log2.clip(1,10))*~tempo);\}\
 					].wrapAt(ill.reverse.wrapAt(logTen+1)).value;\
 \
 					s.set(\cf5 \\pan\cf0 ,(2/(i.factors[j])) * (-1**((ii+j)%5)));\
@@ -95,9 +98,6 @@ z.freeAll;\
 					s.set(\cf5 \\gate\cf0 ,1);\
 					\
 					s.set(\cf5 \\amp\cf0 ,(1/( (pp+8).log10)) * 0.02 / ((k/p.log10.ceil)+1));\
-					//s.set(\cf5 \\amp\cf0 ,(2/( (pp+98).log10)) * 0.02 / ((k/p.log10.ceil)+1));\
-					//s.set(\cf5 \\amp\cf0 ,(1/( (pp+4).log10)) *i.factors[j].log * 0.02/ ((k/p.log2.ceil)+1));\
-\
 					\});\
 				w.(pp,i).wait;\
 				\});\
@@ -108,7 +108,6 @@ z.freeAll;\
 		\};\
 		~clock.play(r,0);\
 		(1/2).wait;\
-//		([0,2/3,1,0,9/8,4/3].permute(i).wrapAt(i.factors.reverse[0].log2.ceil)).wait;\
 \};\
 \
 \
